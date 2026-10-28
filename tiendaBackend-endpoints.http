@@ -1,0 +1,243 @@
+### ========================================
+### SNEAKERX - Simulación completa del flujo
+### ========================================
+###
+### Instrucciones:
+### 1. Inicia los servicios en orden: Eureka → User → Product → Gateway
+### 2. Ejecuta los requests de arriba hacia abajo (sigue el orden de los ###)
+### 3. Después del Login, copia el token en la variable @jwt_token
+###
+### Variables globales
+@jwt_token=
+@session_id=visitor-session-abc123
+@user_id=1
+
+# ============================================
+# PASO 1: REGISTRAR USUARIO NUEVO
+# ============================================
+
+### [Paso 1] Registrar usuario carlos_sneaker
+POST http://localhost:8082/api/v1/sneakerx/user/auth/register
+Content-Type: application/json
+
+{
+  "username": "carlos_sneaker",
+  "password": "password123",
+  "email": "carlos@sneakerx.com",
+  "phone": "+56912345678",
+  "address": "Av. Principal 123",
+  "comuna": "Providencia"
+}
+
+###
+### [Paso 1b] Registrar segundo usuario (maria_runner)
+POST http://localhost:8082/api/v1/sneakerx/user/auth/register
+Content-Type: application/json
+
+{
+  "username": "maria_runner",
+  "password": "password123",
+  "email": "maria@sneakerx.com",
+  "phone": "+56987654321",
+  "address": "Calle Los Robles 456",
+  "comuna": "Las Condes"
+}
+
+# ============================================
+# PASO 2: LOGIN DEL USUARIO
+# ============================================
+
+### [Paso 2] Login de carlos_sneaker → Copia el token en @jwt_token
+POST http://localhost:8082/api/v1/sneakerx/user/auth/login
+Content-Type: application/json
+
+{
+  "username": "carlos_sneaker",
+  "password": "password123"
+}
+
+# ============================================
+# PASO 3: VER PRODUCTOS DISPONIBLES
+# (Los productos ya están en la BD por Flyway V4)
+# ============================================
+
+### [Paso 3] Ver todos los productos de la tienda
+GET http://localhost:8082/api/v1/sneakerx/producto/productos
+Accept: application/json
+
+###
+### [Paso 3b] Ver productos de Running
+GET http://localhost:8082/api/v1/sneakerx/producto/productos?categoria=Running
+Accept: application/json
+
+###
+### [Paso 3c] Buscar productos por nombre
+GET http://localhost:8082/api/v1/sneakerx/producto/productos?nombre=Nike
+Accept: application/json
+
+# ============================================
+# PASO 4: CARRITO CON USUARIO AUTENTICADO
+# (Carlos agrega sneakers a su carrito)
+# ============================================
+
+### [Paso 4a] Ver carrito de Carlos (se crea automáticamente si no existe)
+GET http://localhost:8082/api/v1/sneakerx/carrito
+X-User-Id: {{user_id}}
+Accept: application/json
+
+###
+### [Paso 4b] Carlos agrega Nike Air Max 90 (producto ID=1, cantidad=1)
+POST http://localhost:8082/api/v1/sneakerx/carrito/items
+Content-Type: application/json
+X-User-Id: {{user_id}}
+
+{
+  "productoId": 1,
+  "cantidad": 1
+}
+
+###
+### [Paso 4c] Carlos agrega Jordan 1 Retro (producto ID=3, cantidad=1)
+POST http://localhost:8082/api/v1/sneakerx/carrito/items
+Content-Type: application/json
+X-User-Id: {{user_id}}
+
+{
+  "productoId": 3,
+  "cantidad": 1
+}
+
+###
+### [Paso 4d] Carlos agrega Vans Old Skool (producto ID=6, cantidad=2)
+POST http://localhost:8082/api/v1/sneakerx/carrito/items
+Content-Type: application/json
+X-User-Id: {{user_id}}
+
+{
+  "productoId": 6,
+  "cantidad": 2
+}
+
+###
+### [Paso 4e] Ver carrito de Carlos con 3 items
+GET http://localhost:8082/api/v1/sneakerx/carrito
+X-User-Id: {{user_id}}
+Accept: application/json
+
+# ============================================
+# PASO 5: CARRITO COMO VISITANTE (sin cuenta)
+# (Un visitante navega la tienda y agrega productos)
+# ============================================
+
+### [Paso 5a] Visitante agrega Adidas Ultraboost (producto ID=2, cantidad=1)
+POST http://localhost:8082/api/v1/sneakerx/carrito/sesion/items
+Content-Type: application/json
+X-Session-Id: {{session_id}}
+
+{
+  "productoId": 2,
+  "cantidad": 1
+}
+
+###
+### [Paso 5b] Visitante agrega New Balance 550 (producto ID=4, cantidad=1)
+POST http://localhost:8082/api/v1/sneakerx/carrito/sesion/items
+Content-Type: application/json
+X-Session-Id: {{session_id}}
+
+{
+  "productoId": 4,
+  "cantidad": 1
+}
+
+###
+### [Paso 5c] Visitante agrega Converse Chuck Taylor (producto ID=7, cantidad=2)
+POST http://localhost:8082/api/v1/sneakerx/carrito/sesion/items
+Content-Type: application/json
+X-Session-Id: {{session_id}}
+
+{
+  "productoId": 7,
+  "cantidad": 2
+}
+
+###
+### [Paso 5d] Ver carrito temporal del visitante (3 items)
+GET http://localhost:8082/api/v1/sneakerx/carrito/sesion
+X-Session-Id: {{session_id}}
+Accept: application/json
+
+# ============================================
+# PASO 6: VISITANTE SE REGISTRA Y TRANSFIERE CARRITO
+# (El visitante decide crear cuenta y mantiene su carrito)
+# ============================================
+
+### [Paso 6] Transferir carrito temporal al usuario carlos_sneaker (ID=1)
+### Los items del carrito temporal se fusionan con el carrito del usuario
+POST http://localhost:8082/api/v1/sneakerx/carrito/transferir
+X-Session-Id: {{session_id}}
+X-User-Id: {{user_id}}
+Accept: application/json
+
+###
+### [Paso 6b] Ver carrito fusionado de Carlos (6 items: 3 propios + 3 del visitante)
+GET http://localhost:8082/api/v1/sneakerx/carrito
+X-User-Id: {{user_id}}
+Accept: application/json
+
+# ============================================
+# PASO 7: PERFIL DEL USUARIO
+# ============================================
+
+### [Paso 7] Ver perfil de Carlos (requiere JWT token del Paso 2)
+GET http://localhost:8082/api/v1/sneakerx/user/usuarios/me
+Authorization: Bearer {{jwt_token}}
+Accept: application/json
+
+# ============================================
+# ENDPOINTS ADICIONALES DE PRUEBA
+# ============================================
+
+### Eureka: Ver servicios registrados
+GET http://localhost:8761/eureka/apps
+Accept: application/json
+
+###
+### Gateway: Health check
+GET http://localhost:8082/actuator/health
+Accept: application/json
+
+# ----------------------------------------
+### Actualizar cantidad de un item en carrito
+PUT http://localhost:8082/api/v1/sneakerx/carrito/items/1?cantidad=5
+X-User-Id: {{user_id}}
+
+###
+### Eliminar un item del carrito
+DELETE http://localhost:8082/api/v1/sneakerx/carrito/items/1
+X-User-Id: {{user_id}}
+
+###
+### Vaciar carrito completo
+DELETE http://localhost:8082/api/v1/sneakerx/carrito
+X-User-Id: {{user_id}}
+
+# ----------------------------------------
+### Admin: Crear producto nuevo
+POST http://localhost:8082/api/v1/sneakerx/producto/admin/productos
+Content-Type: application/json
+
+{
+  "nombre": "Asics Gel-Kayano 30",
+  "descripcion": "Estabilidad y confort para corredores de larga distancia.",
+  "precio": 2899.00,
+  "stock": 60,
+  "imagen": "asics-kayano.jpg",
+  "categoria": "Running"
+}
+
+###
+### Admin: Listar usuarios
+GET http://localhost:8082/api/v1/sneakerx/user/admin/usuarios
+Authorization: Bearer {{jwt_token}}
+Accept: application/json
