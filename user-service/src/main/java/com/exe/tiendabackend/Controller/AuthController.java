@@ -1,6 +1,7 @@
 package com.exe.tiendabackend.Controller;
 
 import com.exe.tiendabackend.Dto.AuthResponse;
+import com.exe.tiendabackend.Dto.GoogleLoginRequest;
 import com.exe.tiendabackend.Dto.LoginRequest;
 import com.exe.tiendabackend.Dto.RegisterRequest;
 import com.exe.tiendabackend.Service.AuthService;
@@ -27,5 +28,15 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
+    }
+
+    @PostMapping("/google")
+    public ResponseEntity<AuthResponse> google(@RequestBody GoogleLoginRequest request) {
+        return ResponseEntity.ok(authService.loginWithGoogle(request.credential()));
+    }
+
+    @PostMapping("/google/register")
+    public ResponseEntity<AuthResponse> googleRegister(@RequestBody GoogleLoginRequest request) {
+        return ResponseEntity.ok(authService.registerWithGoogle(request.credential()));
     }
 }

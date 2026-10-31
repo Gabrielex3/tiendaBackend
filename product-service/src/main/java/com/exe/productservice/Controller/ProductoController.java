@@ -34,4 +34,9 @@ public class ProductoController {
     public Producto obtener(@PathVariable Long id) {
         return productoService.obtenerPorId(id);
     }
+
+    @PutMapping("/{id}/stock")
+    public Producto decrementarStock(@PathVariable Long id, @RequestParam Integer cantidad) {
+        return productoService.decrementarStock(id, cantidad);
+    }
 }

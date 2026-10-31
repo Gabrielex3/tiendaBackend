@@ -65,6 +65,16 @@ public class ProductoService {
     }
 
     @Transactional
+    public Producto decrementarStock(Long id, Integer cantidad) {
+        Producto producto = obtenerPorId(id);
+        int actual = producto.getStock() == null ? 0 : producto.getStock();
+        int nuevo = actual - (cantidad == null ? 0 : cantidad);
+        if (nuevo < 0) nuevo = 0;
+        producto.setStock(nuevo);
+        return productoRepository.save(producto);
+    }
+
+    @Transactional
     public void eliminar(Long id) {
         Producto producto = obtenerPorId(id);
         producto.setActivo(false);

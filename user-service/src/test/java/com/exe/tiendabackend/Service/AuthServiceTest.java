@@ -40,7 +40,7 @@ class AuthServiceTest {
             return saved;
         });
         var response = service.register(new RegisterRequest(
-                "ana", "password123", "ana@example.com", null, null, null));
+                "ana", "password123", "ana@example.com", null, null, null, null, null));
         var captor = ArgumentCaptor.forClass(Usuario.class);
         verify(repository).saveAndFlush(captor.capture());
         assertTrue(encoder.matches("password123", captor.getValue().getPassword()));
@@ -54,7 +54,7 @@ class AuthServiceTest {
     void duplicateRegistrationReturnsConflictWithoutSaving() {
         when(repository.existsByEmail("ana@example.com")).thenReturn(true);
         var exception = assertThrows(ResponseStatusException.class, () -> service.register(
-                new RegisterRequest("ana", "password123", "ana@example.com", null, null, null)));
+                new RegisterRequest("ana", "password123", "ana@example.com", null, null, null, null, null)));
         assertEquals(409, exception.getStatusCode().value());
         verify(repository, never()).saveAndFlush(any());
         verifyNoInteractions(jwt);

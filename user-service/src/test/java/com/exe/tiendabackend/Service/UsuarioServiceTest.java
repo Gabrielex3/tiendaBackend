@@ -5,6 +5,7 @@ import com.exe.tiendabackend.Model.Role;
 import com.exe.tiendabackend.Model.Usuario;
 import com.exe.tiendabackend.Repository.UsuarioRepository;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
@@ -15,7 +16,8 @@ import static org.mockito.Mockito.*;
 
 class UsuarioServiceTest {
     private final UsuarioRepository repository = mock(UsuarioRepository.class);
-    private final UsuarioService service = new UsuarioService(repository);
+    private final PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
+    private final UsuarioService service = new UsuarioService(repository, passwordEncoder);
 
     @Test
     void profileUpdatePreservesCredentialsAndRole() {
@@ -24,8 +26,8 @@ class UsuarioServiceTest {
         when(repository.findByUsername("ana")).thenReturn(Optional.of(usuario));
         when(repository.saveAndFlush(usuario)).thenReturn(usuario);
         var updated = service.actualizarPerfil("ana",
-                new ActualizarUsuarioRequest("new@example.com", "123", "Calle 1", "Santiago"));
-        assertEquals("new@example.com", updated.getEmail());
+                new ActualizarUsuarioRequest("new@example.com", "123", "Calle 1", "Santiago", null, null, null, null));
+        assertEquals("old@example.com", updated.getEmail()); // email no se cambia desde el perfil
         assertEquals("123", updated.getPhone());
         assertEquals("Calle 1", updated.getAddress());
         assertEquals("Santiago", updated.getComuna());
@@ -40,7 +42,7 @@ class UsuarioServiceTest {
         when(repository.findById(1L)).thenReturn(Optional.of(usuario));
         when(repository.existsByEmailAndIdNot("taken@example.com", 1L)).thenReturn(true);
         var exception = assertThrows(ResponseStatusException.class, () -> service.actualizar(1L,
-                new ActualizarUsuarioRequest("taken@example.com", null, null, null)));
+                new ActualizarUsuarioRequest("taken@example.com", null, null, null, null, null, null, null)));
         assertEquals(409, exception.getStatusCode().value());
         assertEquals("old@example.com", usuario.getEmail());
         verify(repository, never()).saveAndFlush(any());
