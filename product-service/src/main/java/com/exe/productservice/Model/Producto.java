@@ -45,6 +45,10 @@ public class Producto {
     @Builder.Default
     private Boolean destacado = false;
 
+    @Column(name = "en_carrusel", nullable = false)
+    @Builder.Default
+    private Boolean enCarrusel = false;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

@@ -13,5 +13,6 @@ public record CrearProductoRequest(
         Integer stock,
         String imagenUrl,
         String categoria,
-        Boolean destacado
+        Boolean destacado,
+        Boolean enCarrusel
 ) {}
