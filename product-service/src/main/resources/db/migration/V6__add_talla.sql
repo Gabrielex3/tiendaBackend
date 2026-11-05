@@ -1,1 +1,1 @@
-ALTER TABLE carrito_items ADD COLUMN IF NOT EXISTS talla VARCHAR(10);
+ALTER TABLE carrito_items ADD COLUMN talla VARCHAR(10);
