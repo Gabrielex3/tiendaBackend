@@ -46,6 +46,7 @@ public class ProductoService {
                 .categoria(request.categoria())
                 .activo(true)
                 .destacado(request.destacado() != null ? request.destacado() : false)
+                .enCarrusel(request.enCarrusel() != null ? request.enCarrusel() : false)
                 .build();
         return productoRepository.save(producto);
     }
@@ -61,6 +62,17 @@ public class ProductoService {
         if (request.categoria() != null) producto.setCategoria(request.categoria());
         if (request.activo() != null) producto.setActivo(request.activo());
         if (request.destacado() != null) producto.setDestacado(request.destacado());
+        if (request.enCarrusel() != null) producto.setEnCarrusel(request.enCarrusel());
+        return productoRepository.save(producto);
+    }
+
+    @Transactional
+    public Producto decrementarStock(Long id, Integer cantidad) {
+        Producto producto = obtenerPorId(id);
+        int actual = producto.getStock() == null ? 0 : producto.getStock();
+        int nuevo = actual - (cantidad == null ? 0 : cantidad);
+        if (nuevo < 0) nuevo = 0;
+        producto.setStock(nuevo);
         return productoRepository.save(producto);
     }
 

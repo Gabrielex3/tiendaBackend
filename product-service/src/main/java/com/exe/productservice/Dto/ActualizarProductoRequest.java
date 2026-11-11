@@ -14,5 +14,6 @@ public record ActualizarProductoRequest(
         String imagenUrl,
         String categoria,
         Boolean activo,
-        Boolean destacado
+        Boolean destacado,
+        Boolean enCarrusel
 ) {}

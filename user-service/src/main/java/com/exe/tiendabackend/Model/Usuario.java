@@ -40,6 +40,11 @@ public class Usuario implements UserDetails {
 
     private String comuna; // Comuna
 
+    private String rut; // RUT
+
+    @Column(name = "imagen_url")
+    private String imagenUrl; // Foto de perfil (Google, etc.)
+
     @Column(name = "created_at", nullable = false, updatable = false)
     @JsonIgnore
     private LocalDateTime createdAt; // Fecha de creación

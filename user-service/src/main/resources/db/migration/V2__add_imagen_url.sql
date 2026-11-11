@@ -1,0 +1,1 @@
+ALTER TABLE users ADD COLUMN imagen_url VARCHAR(512);

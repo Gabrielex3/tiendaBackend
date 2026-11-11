@@ -34,10 +34,10 @@ public class CarritoService {
         return carrito;
     }
 
+    @Transactional(readOnly = false)
     public Carrito obtenerCarrito(Long usuarioId) {
-        Carrito carrito = carritoRepository.findByUsuarioId(usuarioId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado"));
-        carrito.getItems().size();
+        Carrito carrito = obtenerCarritoOCrear(usuarioId);
+        carrito.getItems().forEach(item -> item.getProducto().getNombre());
         return carrito;
     }
 
@@ -54,20 +54,20 @@ public class CarritoService {
         return carrito;
     }
 
+    @Transactional(readOnly = false)
     public Carrito obtenerCarritoPorSesion(String sessionId) {
-        Carrito carrito = carritoRepository.findBySessionId(sessionId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado"));
-        carrito.getItems().size();
+        Carrito carrito = obtenerCarritoSesionOCrear(sessionId);
+        carrito.getItems().forEach(item -> item.getProducto().getNombre());
         return carrito;
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public Carrito agregarItem(Long usuarioId, AgregarAlCarritoRequest request) {
         Carrito carrito = obtenerCarritoOCrear(usuarioId);
         Producto producto = productoService.obtenerPorId(request.productoId());
 
         Optional<CartItem> itemExistente = carrito.getItems().stream()
-                .filter(item -> item.getProducto().getId().equals(request.productoId()) && java.util.Objects.equals(item.getTalla(), request.talla()))
+                .filter(item -> item.getProducto().getNombre().equals(request.productoId()) && java.util.Objects.equals(item.getTalla(), request.talla()))
                 .findFirst();
 
         if (itemExistente.isPresent()) {
@@ -87,7 +87,7 @@ public class CarritoService {
         return carritoRepository.save(carrito);
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public Carrito actualizarCantidad(Long usuarioId, Long itemId, Integer cantidad) {
         Carrito carrito = obtenerCarritoOCrear(usuarioId);
         CartItem item = carrito.getItems().stream()
@@ -104,7 +104,7 @@ public class CarritoService {
         return carritoRepository.save(carrito);
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public void eliminarItem(Long usuarioId, Long itemId) {
         Carrito carrito = obtenerCarritoOCrear(usuarioId);
         CartItem item = carrito.getItems().stream()
@@ -115,7 +115,7 @@ public class CarritoService {
         carritoRepository.save(carrito);
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public void vaciarCarrito(Long usuarioId) {
         Carrito carrito = obtenerCarritoOCrear(usuarioId);
         carrito.getItems().clear();
@@ -124,13 +124,13 @@ public class CarritoService {
 
     // --- Métodos para sesión temporal (visitantes) ---
 
-    @Transactional
+    @Transactional(readOnly = false)
     public Carrito agregarItemPorSesion(String sessionId, AgregarAlCarritoRequest request) {
         Carrito carrito = obtenerCarritoSesionOCrear(sessionId);
         Producto producto = productoService.obtenerPorId(request.productoId());
 
         Optional<CartItem> itemExistente = carrito.getItems().stream()
-                .filter(item -> item.getProducto().getId().equals(request.productoId()) && java.util.Objects.equals(item.getTalla(), request.talla()))
+                .filter(item -> item.getProducto().getNombre().equals(request.productoId()) && java.util.Objects.equals(item.getTalla(), request.talla()))
                 .findFirst();
 
         if (itemExistente.isPresent()) {
@@ -150,7 +150,7 @@ public class CarritoService {
         return carritoRepository.save(carrito);
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public Carrito actualizarCantidadPorSesion(String sessionId, Long itemId, Integer cantidad) {
         Carrito carrito = obtenerCarritoSesionOCrear(sessionId);
         CartItem item = carrito.getItems().stream()
@@ -167,7 +167,7 @@ public class CarritoService {
         return carritoRepository.save(carrito);
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public void eliminarItemPorSesion(String sessionId, Long itemId) {
         Carrito carrito = obtenerCarritoSesionOCrear(sessionId);
         CartItem item = carrito.getItems().stream()
@@ -178,7 +178,7 @@ public class CarritoService {
         carritoRepository.save(carrito);
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public void vaciarCarritoPorSesion(String sessionId) {
         Carrito carrito = obtenerCarritoSesionOCrear(sessionId);
         carrito.getItems().clear();
@@ -187,7 +187,7 @@ public class CarritoService {
 
     // --- Transferir carrito temporal a usuario autenticado ---
 
-    @Transactional
+    @Transactional(readOnly = false)
     public Carrito transferirCarritoASesion(String sessionId, Long usuarioId) {
         // Buscar el carrito temporal
         Carrito carritoTemporal = carritoRepository.findBySessionId(sessionId)

@@ -1,0 +1,139 @@
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: tienda-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: tienda_usuarios
+      MYSQL_USER: tienda_app
+      MYSQL_PASSWORD: tienda123
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  eureka:
+    build: ./eureka-server
+    container_name: tienda-eureka
+    ports:
+      - "8761:8761"
+    environment:
+      SERVER_PORT.EUREKA: 8761
+
+  user-service:
+    build: ./user-service
+    container_name: tienda-user
+    ports:
+      - "8080:8080"
+    environment:
+      SERVER_PORT.USUARIOS: 8080
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME.USUARIOS: tienda_usuarios
+      DB_USERNAME: tienda_app
+      DB_PASSWORD: tienda123
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka:8761/eureka/
+      JWT_SECRET: wA8VORYRqMjEse1aWcwIbDUwtLn8q4gdHBF1kNvd7+8=
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+
+  product-service:
+    build: ./product-service
+    container_name: tienda-product
+    ports:
+      - "8081:8081"
+    environment:
+      SERVER_PORT.PRODUCTOS: 8081
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME.PRODUCTOS: tienda_productos
+      DB_USERNAME: tienda_app
+      DB_PASSWORD: tienda123
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka:8761/eureka/
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+
+  payment-service:
+    build: ./payment-service
+    container_name: tienda-payment
+    ports:
+      - "8083:8083"
+    environment:
+      SERVER_PORT.PAGOS: 8083
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME.PAGOS: tienda_pagos
+      DB_USERNAME: tienda_app
+      DB_PASSWORD: tienda123
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka:8761/eureka/
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+
+  contact-service:
+    build: ./contact-service
+    container_name: tienda-contact
+    ports:
+      - "8084:8084"
+    environment:
+      SERVER_PORT.CONTACTO: 8084
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME.CONTACTO: tienda_contacto
+      DB_USERNAME: tienda_app
+      DB_PASSWORD: tienda123
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka:8761/eureka/
+      GOOGLE_AI_API_KEY: ${GOOGLE_AI_API_KEY:-}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: tienda-gateway
+    ports:
+      - "8082:8082"
+    environment:
+      SERVER_PORT.GATEWAY: 8082
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka:8761/eureka/
+    depends_on:
+      eureka:
+        condition: service_started
+      user-service:
+        condition: service_started
+      product-service:
+        condition: service_started
+      payment-service:
+        condition: service_started
+      contact-service:
+        condition: service_started
+
+  frontend:
+    build:
+      context: ../TiendaEcomerceEVA1/frontend-tienda
+      dockerfile: Dockerfile
+    container_name: tienda-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - api-gateway
+
+volumes:
+  mysql_data:
