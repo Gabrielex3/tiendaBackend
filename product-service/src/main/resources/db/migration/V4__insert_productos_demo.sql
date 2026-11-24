@@ -1,13 +1,2 @@
--- Productos de prueba para la tienda SneakerX
-INSERT INTO productos (nombre, descripcion, precio, stock, imagen_url, categoria, activo, created_at)
-VALUES
-    ('Nike Air Max 90', 'Zapatillas clásicas con amortiguación Air visible, diseño retro y comodidad excepcional.', 2499.00, 100, 'https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco/1b8d5913-0a63-4123-b0cb-2ea56de1730e/air-max-90-mens-shoes-6n6vqr.png', 'Running', TRUE, NOW()),
-    ('Adidas Ultraboost 22', 'Zapatillas de running con tecnología Boost para máxima energía devuelta y confort.', 3299.00, 75, 'https://assets.adidas.com/images/h_840,f_auto,q_auto,fl_lossy,c_fill,g_auto/5f7a6e3c1c6b4b5e9e84af1700e5a8a0_9364/Zapatillas_Ultraboost_22_Blanco_GZ0127_01_standard.jpg', 'Running', TRUE, NOW()),
-    ('Jordan 1 Retro High OG', 'El icónico Jordan 1 en su versión retro alta, un clásico de la cultura sneaker.', 3799.00, 50, 'https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco/b1bcb30d-c077-4f55-a384-dcebacebe20f/air-jordan-1-retro-high-og-shoes-9RXIrt.png', 'Basketball', TRUE, NOW()),
-    ('New Balance 550', 'Zapatillas estilo basketball vintage, suaves y versátiles para uso diario.', 1999.00, 120, 'https://www.newbalance.com.on-demand.cloud/riserver2/190219053/BB550WT4_BB550WT4_JC_01.jpg', 'Casual', TRUE, NOW()),
-    ('Puma RS-X', 'Zapatillas con diseño futurista y suela RS para amortiguación reactiva.', 1899.00, 80, 'https://images.puma.com/image/upload/f_auto,q_auto,b_rgb:fafafa,w_600,h_600/global/369638/02/sv01/fnd/IND/fmt/png/RS-X-Shoes', 'Casual', TRUE, NOW()),
-    ('Vans Old Skool', 'El skate shoe más icónico de Vans con la franja lateral clásica.', 1299.00, 200, 'https://images.vans.com/is/image/Vans/VN000D3HY2G-HERO?$583x583$', 'Skate', TRUE, NOW()),
-    ('Converse Chuck Taylor All Star', 'Zapatillas canvas altas, un clásico atemporal desde 1917.', 999.00, 300, 'https://www.converse.com.on-demand.cloud/riserver2/190219053/CK11100001_01_standard.jpg', 'Casual', TRUE, NOW()),
-    ('Reebok Classic Leather', 'Zapatillas de cuero suaves con diseño minimalista y comodidad todo el día.', 1599.00, 90, 'https://assets.reebok.com/images/h_840,f_auto,q_auto,fl_lossy,c_fill,g_auto/1b5f5e5e5e5e5e5e5e5e5e5e5e5e5e5e/9364/Zapatillas_Classic_Leather_Blanco_100074492_01_standard.jpg', 'Casual', TRUE, NOW()),
-    ('Nike Dunk Low', 'El regreso del clásico Dunk con diseño bajo y estilo streetwear.', 2199.00, 150, 'https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco/1ccfab00-46de-4a80-87a3-2d05b67f841a/dunk-low-retro-mens-shoes-6XYXYF.png', 'Casual', TRUE, NOW()),
-    ('Asics Gel-Kayano 14', 'Zapatillas de running con estética retro y soporte Gel para máxima estabilidad.', 2699.00, 60, 'https://images.asics.com/is/image/asics/1201A571_10001_SURF_GRYPHITE_EXT_TERRIEN_$WEB_PDP_IMAGE_4_$', 'Running', TRUE, NOW());
+-- Carga manual disponible en scripts/insertar_datos_demo.sql.
+SELECT 1;

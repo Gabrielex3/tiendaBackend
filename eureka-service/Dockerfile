@@ -1,1 +1,0 @@
-RUN mvn -q -DskipTests package
