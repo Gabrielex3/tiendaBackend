@@ -153,3 +153,32 @@ cd user-service && mvn test
 - El frontend se despliega en el puerto `5173` (Vite dev server) o `80` (Nginx en Docker)
 - Los visitantes pueden usar carritos temporales con session ID
 - La autenticación usa tokens JWT con expiración configurable
+
+## Datos de demostración con Flyway
+
+Al arrancar, Flyway aplica una sola vez las migraciones pendientes de cada servicio:
+
+| Servicio | Migración | Datos |
+| --- | --- | --- |
+| Usuarios | `V6__insertar_usuarios_demo.sql` | 20 clientes ficticios y 1 administrador |
+| Productos | `V11__insertar_productos_demo.sql` | 20 productos y stock descontado de las compras de prueba |
+| Productos | `V12__insertar_blogs_demo.sql` | 5 publicaciones |
+| Pagos | `V1__create_pagos.sql`, `V2__insertar_compras_demo.sql` | Tablas, 10 compras y 20 líneas de compra |
+
+Administrador: `admin@sneakersx.cl`, contraseña de prueba `password123`.
+Clientes: `cliente01@example.com` a `cliente20@example.com`, con la misma contraseña
+de prueba. Las contraseñas están almacenadas con BCrypt. Los productos usan nombres
+ficticios e imágenes proporcionadas para la demostración, algunas repetidas en distinta
+resolución. Los pagos son registros de prueba, sin cobros bancarios.
+
+Cada producto comienza con 30 unidades y descuenta las cantidades incluidas en las
+compras. El total de cada pago es la suma de cantidad por precio unitario, de acuerdo
+con el servicio de pagos. Los servicios migran únicamente sus propias bases.
+
+Los reinicios conservan los datos y no vuelven a insertar ni descontar stock.
+No ejecutar el [SQL manual](scripts/insertar_datos_demo.sql) después de Flyway:
+es una alternativa para una base vacía sin las migraciones de carga.
+
+Consulta [las instrucciones](scripts/INSTRUCCIONES.txt) y ejecuta
+[la verificación](scripts/verificar_datos_demo.sql) para comprobar cantidades,
+relaciones, totales y stock inmediatamente después de la carga.
